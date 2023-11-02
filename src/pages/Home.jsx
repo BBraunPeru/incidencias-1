@@ -1,6 +1,5 @@
 import { Container} from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Incidente from "../components/Incidente";
 import NavBar from "../components/navbar/Navbar";
 
@@ -12,7 +11,6 @@ const Home = () => {
     const objetCurrentUser = localStorage.getItem("currentUser");
     const currentUser = JSON.parse(objetCurrentUser);
     const [responsables, setResponsables] = useState([])
-    const navigate = useNavigate()
 
     useEffect(() => {
         if (fetchComplete) {
@@ -22,7 +20,7 @@ const Home = () => {
         const fetchData = async () => {
             try {
                 if (currentUser.roll !== "admin") {
-                    const response = await fetch(`https://ssttapi.mibbraun.pe/incidencias/${currentUser.roll}/${currentUser.id}`);
+                    const response = await fetch("https://ssttapi.mibbraun.pe/incidencias");
                     if (!response.ok) {
                         throw new Error('Hubo un problema con la petición Fetch: ' + response.status);
                     }
@@ -78,13 +76,8 @@ const Home = () => {
     if (currentUser.roll === "representante") {
         datosFiltrados = datosInvertidos.filter((fila) => currentUser.id === fila.reporter_id);
     } else if (currentUser.roll === "tecnico") {
-        datosFiltrados = datosInvertidos.filter((fila) => currentUser.id === fila.responsable_id);
+        datosFiltrados = datosInvertidos.filter((fila) => currentUser.usuario === fila.responsable || fila.estado === "ABANDONADO");
     }
-
-    const handleSwitch = (e) => {
-        navigate("/add");
-    };
-
 
     return (
         <>

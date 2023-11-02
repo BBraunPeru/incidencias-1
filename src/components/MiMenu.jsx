@@ -1,11 +1,13 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { IconButton } from '@mui/material';
+import { Box, Button, IconButton, Modal, Typography } from '@mui/material';
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 
 
 const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setShowResp }) => {
+    const [isModalOpen, setModalOpen] = React.useState(false);
+
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
 
@@ -24,8 +26,20 @@ const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setSho
     }
 
     const handleShowResponsable = () => {
-        console.log("mostrando tecnicos")
         setShowResp(true)
+        handleClose()
+    }
+
+    const handleAbandon = () => {
+        console.log("Abandonando orden ...")
+        UpdateState("ABANDONADO")
+        handleUpdateState("responsable_anterior",currentUser.usuario)
+        handleUpdateState("responsable",null)
+    }
+    const handleAssignMyself = () => {
+        console.log("Asignandome orden")
+        UpdateState("ASIGNADO")
+        handleUpdateState("responsable",currentUser.usuario)
     }
 
     let adminOptions = null;
@@ -35,16 +49,17 @@ const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setSho
     if (currentUser.roll === 'admin') {
         adminOptions = [
             <MenuItem key="option1" onClick={(e) => handleShowResponsable()} disabled ={estado!=="POR ASIGNAR"}>Asignar</MenuItem>,
-            <MenuItem key="option2" onClick={(e) => handleClose} disabled ={!(estado=== "ASIGNADO")}>Reasignar</MenuItem>,
+            <MenuItem key="option2" onClick={(e) => handleShowResponsable()} disabled ={(estado=== "POR ASIGNAR")}>Reasignar</MenuItem>,
             <MenuItem key="option3" onClick={(e) => UpdateState("ASIGNADO")} disabled = {estado!=="ATENDIDO"}>Reiniciar</MenuItem>,
-            <MenuItem key="option4" onClick={(e) => UpdateState("CANCELADO")} disabled={estado==="ATENDIDO"}>Cancelar</MenuItem>
+            <MenuItem key="option4" onClick={(e) => UpdateState("CANCELADO")} disabled={estado==="ATENDIDO" || estado === "CANCELADO"}>Cancelar</MenuItem>
         ];
     }
     else if (currentUser.roll === 'tecnico') {
         tecnicoOptions = [
-            <MenuItem key="option1" onClick={(e) => UpdateState("ATENDIDO")} disabled = {estado==="ATENDIDO"}>Marcar como atendida</MenuItem>,
-            <MenuItem key="option2" onClick={(e) => UpdateState("PENDIENTE")} disabled = {estado==="ATENDIDO" || estado === "PENDIENTE"}>Marcar como pendiente</MenuItem>,
-            <MenuItem key="option3" onClick={(e) => UpdateState("ABANDONADO")} disabled = {estado==="ATENDIDO"}>Abandonar orden</MenuItem>
+            <MenuItem key="option1" onClick={(e) => setModalOpen(false)} disabled = {estado==="ATENDIDO" || estado === "ABANDONADO"}>Marcar como atendida</MenuItem>,
+            <MenuItem key="option2" onClick={(e) => UpdateState("PENDIENTE")} disabled = {estado==="ATENDIDO" || estado === "PENDIENTE" || estado === "ABANDONADO"}>Marcar como pendiente</MenuItem>,
+            <MenuItem key="option3" onClick={(e) => handleAssignMyself()} disabled = {!(estado==="ABANDONADO")}>Asignarme esta orden</MenuItem>,
+            <MenuItem key="option4" onClick={(e) => handleAbandon()} disabled = {estado==="ATENDIDO" || estado === "ABANDONADO"}>Abandonar esta orden</MenuItem>
         ];
     }
     else{
@@ -77,6 +92,22 @@ const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setSho
                 {tecnicoOptions}
                 {representanteOptions}
             </Menu>
+
+            <Modal
+                open={isModalOpen}
+                onClose={() => setModalOpen(false)}
+                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+                <Box sx={{ padding: '1rem', borderRadius: '8px' }}>
+                    <Typography variant='p'> ¿Desea cambiar el estado?</Typography>
+                    <Button color="primary" onClick={() => setModalOpen(false)}>
+                        Cancelar
+                    </Button>
+                    <Button color="error" onClick={(e) => UpdateState("ATENDIDO")}>
+                        Confirmar
+                    </Button>
+                </Box>
+            </Modal>
         </div>
     );
 }

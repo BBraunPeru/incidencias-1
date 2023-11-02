@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Drawer, IconButton, Input, TextField, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Drawer, IconButton, Input, Toolbar, Typography } from "@mui/material";
 import NavBarListDrawer from "./NavListDrawer"
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -9,49 +9,104 @@ import PersonIcon from '@mui/icons-material/Person';
 import GradingIcon from '@mui/icons-material/Grading';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import getColorByEstado from "../../colores";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import { useNavigate } from "react-router-dom";
 
 const NavBar = ({ currentUser, searchTerm, setSearchTerm, stateFilter, setStateFilter }) => {
     const [openMenu, setOpenMenu] = useState(false);
+    const navigate = useNavigate()
+    
+    let navStateFilterList = []
 
-    const navStateFilterList = [
-        {
-            title: "Todo",
-            icon: <GradingIcon />,
-            estado:""
-        },
-        {
-            title: "Por Asignar",
-            icon: <PersonIcon />,
-            estado:"POR ASIGNAR"
-        },
-        
-        {
-            title: "Asignado",
-            icon: <AssignmentIndIcon />,
-            estado:"ASIGNADO"
-        },
+    if(currentUser.roll === "admin"){
+        navStateFilterList = [
+            {
+                title: "Todo",
+                icon: <GradingIcon />,
+                estado: ""
+            },
+            {
+                title: "Por Asignar",
+                icon: <PersonIcon />,
+                estado: "POR ASIGNAR"
+            },
+    
+            {
+                title: "Asignado",
+                icon: <AssignmentIndIcon />,
+                estado: "ASIGNADO"
+            },
+    
+            {
+                title: "Atendido",
+                icon: <CheckCircleOutlineIcon />,
+                estado: "ATENDIDO"
+            },
+            {
+                title: "Pendiente",
+                icon: <ModeStandbyIcon />,
+                estado: "PENDIENTE"
+            },
+            {
+                title: "Cancelado",
+                icon: <HighlightOffIcon />,
+                estado: "CANCELADO"
+            },
+            {
+                title: "Abandonado",
+                icon: <TransferWithinAStationIcon />,
+                estado: "ABANDONADO"
+            }
+        ]
+    }else if(currentUser.roll === "tecnico"){
+        navStateFilterList = [
+            {
+                title: "Todo",
+                icon: <GradingIcon />,
+                estado: ""
+            },
+            
+            {
+                title: "Asignado",
+                icon: <AssignmentIndIcon />,
+                estado: "ASIGNADO"
+            },
+    
+            {
+                title: "Atendido",
+                icon: <CheckCircleOutlineIcon />,
+                estado: "ATENDIDO"
+            },
+            {
+                title: "Pendiente",
+                icon: <ModeStandbyIcon />,
+                estado: "PENDIENTE"
+            },
+            {
+                title: "Abandonado",
+                icon: <TransferWithinAStationIcon />,
+                estado: "ABANDONADO"
+            }
+        ]
+    }else{
+        navStateFilterList = [
+            {
+                title: "Todo",
+                icon: <GradingIcon />,
+                estado: ""
+            }
+        ]
+    }
+    
 
-        {
-            title: "Atendido",
-            icon: <CheckCircleOutlineIcon />,
-            estado:"ATENDIDO"
-        },
-        {
-            title: "Pendiente",
-            icon: <ModeStandbyIcon />,
-            estado:"PENDIENTE"
-        },
-        {
-            title: "Cancelado",
-            icon: <HighlightOffIcon />,
-            estado:"CANCELADO"
-        }
-    ]
     return (
         <Box sx={{ position: "sticky", top: 0, zIndex: 1000 }}>
             <AppBar>
                 <Toolbar>
                     <IconButton
+                        sx={{ display: { lg: "none", xs: "flex" } }}
                         size="large"
                         onClick={(e) => setOpenMenu(true)}>
                         <MenuIcon />
@@ -73,28 +128,42 @@ const NavBar = ({ currentUser, searchTerm, setSearchTerm, stateFilter, setStateF
                         }}
                     ></Input>
 
+                    <Box sx={{ display: { xs: "none", lg: "block" } }}>
+                        {
+                            navStateFilterList.map((item, index) => (
+                                <Button
+                                    onClick={() => setStateFilter(item.estado)}
+                                    key={index}
+                                    sx={
+                                        stateFilter === item.estado
+                                            ? {
+                                                borderBottom: `.2rem solid ${getColorByEstado(stateFilter)}`,
+                                            }
+                                            : {}
+                                    }
+                                >
+                                    {item.title}
+                                </Button>
+                            ))
+
+                        }
+                    </Box>
                     {
-                        navStateFilterList.map((item, index) => (
-                            <Button
-                                onClick={() => setStateFilter(item.estado)}
-                                key={index}
-                                sx={
-                                    stateFilter === item.estado
-                                        ? {
-                                            borderBottom: `.2rem solid ${getColorByEstado(stateFilter)}`,
-                                        }
-                                        : {}
-                                }
-                            >
-                                {item.title}
+                        currentUser.roll !== "tecnico" && (
+                            <Button title="ADD" onClick={() => navigate("/add")}>
+                                <AddTaskIcon />
                             </Button>
-                        ))
+                        )
                     }
+
+                    <IconButton sx={{ display: { xs: "none", lg: "block" } }} title="Cerrar Sesión" onClick={() => navigate("/")}>
+                        <ExitToAppIcon />
+                    </IconButton>
 
                 </Toolbar>
             </AppBar>
 
-            <Drawer
+            <Drawer sx={{ display: { lg: "none", xs: "block" } }}
                 open={openMenu}
                 anchor="left"
                 onClose={() => setOpenMenu(false)}>

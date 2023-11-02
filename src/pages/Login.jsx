@@ -42,6 +42,8 @@ const Login = () => {
                     localStorage.setItem("currentUser", objetoJSON);
                     setLoading(false);
                     console.log(data)
+                    setUsername("")
+                    setPassword("")
                     navigate('/home')
                 } else {
                     setTextError("Usuario no registrado")

@@ -2,14 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
     Autocomplete,
     Box,
-    Button,
-    FormControl,
-    FormControlLabel,
     IconButton,
-    Modal,
     Paper,
-    Radio,
-    RadioGroup,
     TextField,
     Typography,
 } from '@mui/material';
@@ -23,10 +17,9 @@ import MiMenu from './MiMenu';
 
 import getColorByEstado from "../colores"
 
-const Incidente = ({ data, currentUser, responsables}) => {
+const Incidente = ({ data, currentUser, responsables }) => {
     const [showDetalle, setShowDetalle] = useState(false);
-    const [selectedValue, setSelectedValue] = useState('');
-    const [isModalOpen, setModalOpen] = useState(false);
+    
     const [estado, setEstado] = useState("");
     const [showResp, setShowResp] = useState(false);
     const [responsable, setResponsable] = useState(null);
@@ -35,58 +28,37 @@ const Incidente = ({ data, currentUser, responsables}) => {
         setEstado(data.estado)
     }, [data.estado])
 
-    const tecnicos = responsables.map((item) => ({
-        id: item.id,
-        label: `${item.nombres} ${item.apellidos}`,
-    }));
 
     let datos = [
         data.servicio,
         data.tipo,
-        data.fall,
+        data.detalle,
         data.reporter,
         data.contacto,
         data.celular,
         data.email,
         data.fecha_reporte,
         data.responsable,
-        data.fecha_revision,
-        data.estado_final,
+        data.responsable_anterior,
+        data.fecha_atencion,
         data.estado];
 
 
     const cabeceras = [
         'Servicio',
         'Tipo',
-        'Descripción',
+        'Detalle',
         'Reporter',
         'Contacto',
         'Celular',
         'Email',
-        'Fecha_Reporte',
+        'Fecha de Reporte',
         'Responsable',
-        'Fecha_Revision',
-        'Estado_Final',
+        'Responsable Anterior',
+        'Fecha de Revision',
         'Estado',
     ];
 
-    const handleShowDetail = () => {
-        setShowDetalle(!showDetalle);
-    };
-
-    const handleChangeState = (e) => {
-        if (currentUser.roll !== 'admin') {
-            if (estado !== 'ATENDIDO') {
-                setSelectedValue(e.target.value);
-                setModalOpen(true);
-            } else {
-                alert('Una incidencia atendida ya no puede cambiar el estado, comuníquese con el administrador en caso de error');
-            }
-        } else {
-            setSelectedValue(e.target.value);
-            setModalOpen(true);
-        }
-    };
 
     const updateFieldInc = (key, newState) => {
         console.log(`Actualizando incidencia con id ${data.id} a ${newState}`);
@@ -112,28 +84,14 @@ const Incidente = ({ data, currentUser, responsables}) => {
             });
     };
 
-    const handleConfirm = () => {
-        setModalOpen(false);
-        updateFieldInc("estado", selectedValue)
-        setEstado(selectedValue)
-    };
-    const handleSelectResponsable = (e) => {
-        console.log(data.id);
-        setShowResp(!showResp);
-    };
-
     const AsignResp = () => {
-        console.log(`Asignando a técnico con id ${responsable.id}`);
-        updateFieldInc('responsable_id', responsable.id);
-        updateFieldInc('estado', 'ASIGNADO');
-        setEstado('ASIGNADO');
-        setShowResp(false);
-    };
+        if (responsable !== null) {
+            updateFieldInc('responsable', responsable.usuario);
+            updateFieldInc('estado', 'ASIGNADO');
+            setEstado('ASIGNADO');
+            setShowResp(false);
+        }
 
-    const handleUpdateState = (e) => {
-        console.log('ACTUALIZANDO ESTADO');
-        updateFieldInc('estado', 'ASIGNADO');
-        setEstado('ASIGNADO');
     };
 
     return (
@@ -153,9 +111,9 @@ const Incidente = ({ data, currentUser, responsables}) => {
                     currentUser={currentUser}
                     estado={estado}
                     setEstado={setEstado}
-                    handleUpdateState ={updateFieldInc}
-                    showResp = {showResp}
-                    setShowResp = {setShowResp}
+                    handleUpdateState={updateFieldInc}
+                    showResp={showResp}
+                    setShowResp={setShowResp}
                 />
 
             </Box>
@@ -170,8 +128,8 @@ const Incidente = ({ data, currentUser, responsables}) => {
                 >
                     <Autocomplete
                         sx={{ flex: 6 }}
-                        options={tecnicos}
-                        getOptionLabel={(option) => option.label}
+                        options={responsables}
+                        getOptionLabel={(option) => option.usuario}
                         value={responsable}
                         onChange={(_, newValue) => {
                             setResponsable(newValue);
@@ -182,7 +140,7 @@ const Incidente = ({ data, currentUser, responsables}) => {
                             <TextField {...params} label="Selecciona un nombre" variant="outlined" />
                         )}
                     />
-                    <IconButton onClick={AsignResp} sx={{ flex: 1 }}>
+                    <IconButton onClick={AsignResp} sx={{ flex: 1 }} disabled={responsable === null}>
                         <SaveIcon sx={{ transform: 'scale(1.3)' }} />
                     </IconButton>
                 </Box>
@@ -238,66 +196,8 @@ const Incidente = ({ data, currentUser, responsables}) => {
                         }
                         return null;
                     })}
-                    {currentUser.roll !== 'representante' && (
-                        <FormControl component="fieldset">
-                            <Box
-                                sx={{
-                                    fontSize: '16px',
-                                    fontWeight: 'bold',
-                                }}
-                            >
-                                Estado:
-                            </Box>
-                            <RadioGroup
-                                row
-                                aria-label="position"
-                                name="position"
-                                value={estado}
-                                onChange={handleChangeState}
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                }}
-                            >
-                                {currentUser.roll !== 'admin' ? (
-                                    <>
-                                        <FormControlLabel
-                                            value="ATENDIDO"
-                                            control={<Radio color="primary" />}
-                                            label="Atendido"
-                                            labelPlacement="top"
-                                        />
-                                        <FormControlLabel
-                                            value="PENDIENTE"
-                                            control={<Radio color="primary" />}
-                                            label="Pendiente"
-                                            labelPlacement="top"
-                                        />
-                                    </>
-                                ) : (
-                                    <FormControlLabel
-                                        value="CANCELADO"
-                                        control={<Radio color="primary" />}
-                                        label="Cancelado"
-                                        labelPlacement="top"
-                                    />
-                                )}
-                            </RadioGroup>
-                        </FormControl>
-                    )}
                 </Box>
             )}
-            <Modal open={isModalOpen} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Box sx={{ backgroundColor: 'white', padding: '1rem', borderRadius: '8px' }}>
-                    <p>¿Desea cambiar el estado?</p>
-                    <Button color="primary" onClick={() => setModalOpen(false)}>
-                        Cancelar
-                    </Button>
-                    <Button color="error" onClick={handleConfirm}>
-                        Confirmar
-                    </Button>
-                </Box>
-            </Modal>
         </Paper>
     );
 };

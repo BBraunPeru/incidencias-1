@@ -2,13 +2,13 @@ import { Box, Card, CardContent, Divider, List, ListItemButton, ListItemIcon, Li
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import getColorByEstado from "../../colores";
+import { useNavigate } from "react-router-dom";
 
 
 
 const NavBarListDrawer = ({ currentUser, stateFilter, setStateFilter, navStateFilterList }) => {
-    function capitalizeFirstLetterOnly(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    }
+    
+    const navigate = useNavigate()
     return (
         <Box>
             <Card sx={{ maxWidth: 360, bgcolor: "background.paper" }}>
@@ -21,8 +21,8 @@ const NavBarListDrawer = ({ currentUser, stateFilter, setStateFilter, navStateFi
                         <AccountCircleIcon
                             sx={{ fontSize: 80, color: "#3f51b5" }}
                         />
-                        <Typography variant="p" align="center">
-                            {currentUser.apellidos}
+                        <Typography variant="p" align="center" sx={{fontSize:"14px"}}>
+                            {currentUser.usuario}
                         </Typography>
                     </Box>
                 </CardContent>
@@ -72,10 +72,10 @@ const NavBarListDrawer = ({ currentUser, stateFilter, setStateFilter, navStateFi
                         Usuario
                     </ListSubheader>
                 }>
-                <ListItemButton>
+                <ListItemButton onClick={()=> navigate("/")}>
                     <ListItemIcon>
                         <ExitToAppIcon />
-                    </ListItemIcon>
+                    </ListItemIcon >
                     <ListItemText primary="Cerrar Session" />
                 </ListItemButton>
             </List>
