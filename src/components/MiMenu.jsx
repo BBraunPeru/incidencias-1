@@ -5,7 +5,19 @@ import { Box, Button, IconButton, Modal, Typography } from '@mui/material';
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 
 
-const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setShowResp }) => {
+const MiMenu = (
+    { currentUser,
+        estado,
+        setEstado,
+        handleUpdateState,
+        setShowSelectResp,
+        responsable,
+        setResponsable,
+        responsableAnterior,
+        setResponsableAnterior,
+        grado,
+        setGrado
+    }) => {
     const [isModalOpen, setModalOpen] = React.useState(false);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -21,25 +33,40 @@ const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setSho
 
     const UpdateState = (newState) => {
         console.log(`ACTUALIZANDO ESTADO A ${newState}`)
-        handleUpdateState("estado",newState)
+        handleUpdateState("estado", newState)
         setEstado(newState)
     }
 
     const handleShowResponsable = () => {
-        setShowResp(true)
+        setShowSelectResp(true)
         handleClose()
     }
 
     const handleAbandon = () => {
         console.log("Abandonando orden ...")
         UpdateState("ABANDONADO")
-        handleUpdateState("responsable_anterior",currentUser.usuario)
-        handleUpdateState("responsable",null)
+        handleUpdateState("responsable_anterior", currentUser.usuario)
+        handleUpdateState("responsable", null)
+        setResponsable(null)
+        setResponsableAnterior(currentUser.usuario)
+        setEstado("ABANDONADO")
+        handleClose()
     }
     const handleAssignMyself = () => {
-        console.log("Asignandome orden")
-        UpdateState("ASIGNADO")
-        handleUpdateState("responsable",currentUser.usuario)
+        if (responsableAnterior !== currentUser.usuario) {
+            console.log("Asignandome orden")
+            UpdateState("ASIGNADO")
+            handleUpdateState("responsable", currentUser.usuario)
+            handleClose()
+        }else{
+            alert("No esta permitido asignarse una orden abandonada")
+        }
+    }
+
+    const updateGrado = () => {
+        setGrado("URGENTE")
+        handleUpdateState("grado","URGENTE")
+        handleClose()
     }
 
     let adminOptions = null;
@@ -48,23 +75,23 @@ const MiMenu = ({ currentUser,estado,setEstado,handleUpdateState,showResp,setSho
 
     if (currentUser.roll === 'admin') {
         adminOptions = [
-            <MenuItem key="option1" onClick={(e) => handleShowResponsable()} disabled ={estado!=="POR ASIGNAR"}>Asignar</MenuItem>,
-            <MenuItem key="option2" onClick={(e) => handleShowResponsable()} disabled ={(estado=== "POR ASIGNAR")}>Reasignar</MenuItem>,
-            <MenuItem key="option3" onClick={(e) => UpdateState("ASIGNADO")} disabled = {estado!=="ATENDIDO"}>Reiniciar</MenuItem>,
-            <MenuItem key="option4" onClick={(e) => UpdateState("CANCELADO")} disabled={estado==="ATENDIDO" || estado === "CANCELADO"}>Cancelar</MenuItem>
+            <MenuItem key="option1" onClick={(e) => handleShowResponsable()} disabled={estado !== "POR ASIGNAR"}>Asignar</MenuItem>,
+            <MenuItem key="option2" onClick={(e) => handleShowResponsable()} disabled={(estado === "POR ASIGNAR")}>Reasignar</MenuItem>,
+            <MenuItem key="option3" onClick={(e) => UpdateState("ASIGNADO")} disabled={estado !== "ATENDIDO"}>Reiniciar</MenuItem>,
+            <MenuItem key="option4" onClick={(e) => UpdateState("CANCELADO")} disabled={estado === "ATENDIDO" || estado === "CANCELADO"}>Cancelar</MenuItem>
         ];
     }
     else if (currentUser.roll === 'tecnico') {
         tecnicoOptions = [
-            <MenuItem key="option1" onClick={(e) => setModalOpen(false)} disabled = {estado==="ATENDIDO" || estado === "ABANDONADO"}>Marcar como atendida</MenuItem>,
-            <MenuItem key="option2" onClick={(e) => UpdateState("PENDIENTE")} disabled = {estado==="ATENDIDO" || estado === "PENDIENTE" || estado === "ABANDONADO"}>Marcar como pendiente</MenuItem>,
-            <MenuItem key="option3" onClick={(e) => handleAssignMyself()} disabled = {!(estado==="ABANDONADO")}>Asignarme esta orden</MenuItem>,
-            <MenuItem key="option4" onClick={(e) => handleAbandon()} disabled = {estado==="ATENDIDO" || estado === "ABANDONADO"}>Abandonar esta orden</MenuItem>
+            <MenuItem key="option1" onClick={(e) => UpdateState("ATENDIDO")} disabled={estado === "ATENDIDO" || estado === "ABANDONADO"}>Marcar como atendida</MenuItem>,
+            <MenuItem key="option2" onClick={(e) => UpdateState("PENDIENTE")} disabled={estado === "ATENDIDO" || estado === "PENDIENTE" || estado === "ABANDONADO"}>Marcar como pendiente</MenuItem>,
+            <MenuItem key="option3" onClick={(e) => handleAssignMyself()} disabled={!(estado === "ABANDONADO")}>Asignarme esta orden</MenuItem>,
+            <MenuItem key="option4" onClick={(e) => handleAbandon()} disabled={estado === "ATENDIDO" || estado === "ABANDONADO"}>Abandonar esta orden</MenuItem>
         ];
     }
-    else{
+    else {
         representanteOptions = [
-            <MenuItem key="option1" onClick={handleClose}>Marcar como urgente</MenuItem>
+            <MenuItem key="option1" onClick={(e) => updateGrado()} disabled = {grado==="URGENTE"}>Marcar como urgente</MenuItem>
         ];
 
     }

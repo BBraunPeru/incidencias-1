@@ -104,7 +104,7 @@ const Formulario = ({ setShowForm, setExito }) => {
                             getOptionLabel={(option) => option.institucion}
                             value={institucion}
                             onChange={(_, value) => setInstitucion(value)}
-                            renderInput={(params) => <TextField {...params} label="Institucion" fullWidth />}
+                            renderInput={(params) => <TextField {...params} label="Institucion" fullWidth  required/>}
                         />
                         <Autocomplete
                             id="servicios"
@@ -112,7 +112,7 @@ const Formulario = ({ setShowForm, setExito }) => {
                             getOptionLabel={(option) => option.servicio}
                             value={servicio}
                             onChange={(_, value) => setServicio(value)}
-                            renderInput={(params) => <TextField {...params} label="Servicio" fullWidth />}
+                            renderInput={(params) => <TextField {...params} label="Servicio" fullWidth required/>}
                         />
                         <Autocomplete
                             id="tipos"
@@ -120,7 +120,7 @@ const Formulario = ({ setShowForm, setExito }) => {
                             getOptionLabel={(option) => option.tipo}
                             value={tipo}
                             onChange={(_, value) => setTipo(value)}
-                            renderInput={(params) => <TextField {...params} label="Tipo" fullWidth />}
+                            renderInput={(params) => <TextField {...params} label="Tipo" fullWidth required />}
                         />
 
                         <TextField type="text" value={detalle} label="Detalle" onChange={(e) => setDetalle(e.target.value)} required />
@@ -137,6 +137,8 @@ const Formulario = ({ setShowForm, setExito }) => {
                                         <TextField
                                             {...params}
                                             label="Representante"
+                                            fullWidth
+                                            required
                                         />
                                     )}
                                 />

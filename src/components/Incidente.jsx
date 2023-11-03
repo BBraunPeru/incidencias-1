@@ -14,19 +14,25 @@ import {
 } from '@mui/icons-material';
 
 import MiMenu from './MiMenu';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import getColorByEstado from "../colores"
 
 const Incidente = ({ data, currentUser, responsables }) => {
     const [showDetalle, setShowDetalle] = useState(false);
-    
     const [estado, setEstado] = useState("");
-    const [showResp, setShowResp] = useState(false);
+    const [showSelectResp, setShowSelectResp] = useState(false);
     const [responsable, setResponsable] = useState(null);
+    const [responsableAnterior, setResponsableAnterior] = useState(null)
+    const [grado, setGrado] = useState("")
 
     useEffect(() => {
         setEstado(data.estado)
-    }, [data.estado])
+        setResponsable(data.responsable)
+        setResponsableAnterior(data.responsable_anterior)
+        setGrado(data.grado)
+    }, [data.estado, data.responsable, data.responsable_anterior, data.grado])
 
 
     let datos = [
@@ -38,10 +44,11 @@ const Incidente = ({ data, currentUser, responsables }) => {
         data.celular,
         data.email,
         data.fecha_reporte,
-        data.responsable,
-        data.responsable_anterior,
+        responsable,
+        responsableAnterior,
         data.fecha_atencion,
-        data.estado];
+        estado
+    ];
 
 
     const cabeceras = [
@@ -87,9 +94,10 @@ const Incidente = ({ data, currentUser, responsables }) => {
     const AsignResp = () => {
         if (responsable !== null) {
             updateFieldInc('responsable', responsable.usuario);
+            setResponsable(responsable.usuario)
             updateFieldInc('estado', 'ASIGNADO');
             setEstado('ASIGNADO');
-            setShowResp(false);
+            setShowSelectResp(false);
         }
 
     };
@@ -106,18 +114,31 @@ const Incidente = ({ data, currentUser, responsables }) => {
                     borderBottom: `.5rem solid${getColorByEstado(estado)}`
                 }}
             >
-                <Typography onClick={(e) => setShowDetalle(!showDetalle)} variant='h6' gutterBottom >{data.institucion}</Typography>
+                {
+                    grado === "URGENTE" ? (
+                        <WarningRoundedIcon color='warning' />
+                    ):(
+                        <CheckCircleRoundedIcon color='success'/>
+                    )
+                }
+                <Typography onClick={(e) => setShowDetalle(!showDetalle)} variant='h6' gutterBottom sx={{cursor: 'pointer' }}>{data.institucion}</Typography>
                 <MiMenu
                     currentUser={currentUser}
                     estado={estado}
                     setEstado={setEstado}
+                    responsable={responsable}
+                    setResponsable={setResponsable}
+                    responsableAnterior={responsableAnterior}
+                    setResponsableAnterior={setResponsableAnterior}
                     handleUpdateState={updateFieldInc}
-                    showResp={showResp}
-                    setShowResp={setShowResp}
+                    showSelectResp={showSelectResp}
+                    setShowSelectResp={setShowSelectResp}
+                    grado ={grado}
+                    setGrado = {setGrado}
                 />
 
             </Box>
-            {showResp && (
+            {showSelectResp && (
                 <Box
                     sx={{
                         display: 'flex',

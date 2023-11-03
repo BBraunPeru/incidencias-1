@@ -27,7 +27,7 @@ const AddIncidents = () => {
             <Paper elevation={3} sx={{ display:"flex",flexDirection:"column",gap:"1rem",padding:"1rem" }}>
                 {showForm ? (
                     <>
-                        <Link to={"/home"} style={{ textDecoration: "none" }}><Typography variant="h4">Incidencias BBRAUN</Typography></Link>
+                        <Link to={"/home"} style={{ textDecoration: "none" }}><Typography color="primary" variant="h5">Registro de Incidencias</Typography></Link>
                         <Formulario
                             setShowForm={setShowForm}
                             setExito={setExito} />

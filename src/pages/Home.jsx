@@ -16,7 +16,7 @@ const Home = () => {
         if (fetchComplete) {
             return; // No hacer nada si ya se ha completado la carga
         }
-
+        console.log("Obteniendo datos")
         const fetchData = async () => {
             try {
                 if (currentUser.roll !== "admin") {
@@ -74,7 +74,7 @@ const Home = () => {
     // console.log(datosFiltrados)
 
     if (currentUser.roll === "representante") {
-        datosFiltrados = datosInvertidos.filter((fila) => currentUser.id === fila.reporter_id);
+        datosFiltrados = datosInvertidos.filter((fila) => currentUser.usuario === fila.reporter);
     } else if (currentUser.roll === "tecnico") {
         datosFiltrados = datosInvertidos.filter((fila) => currentUser.usuario === fila.responsable || fila.estado === "ABANDONADO");
     }
