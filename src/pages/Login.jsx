@@ -41,7 +41,6 @@ const Login = () => {
                     // Guardar la cadena JSON en localStorage
                     localStorage.setItem("currentUser", objetoJSON);
                     setLoading(false);
-                    console.log(data)
                     setUsername("")
                     setPassword("")
                     navigate('/home')

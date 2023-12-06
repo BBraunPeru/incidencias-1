@@ -24,7 +24,9 @@ const AddIncidents = () => {
 
     return (
         <Container maxWidth="xs" style={{ display: "flex", alignItems: "center",minHeight:"100vh" }}>
-            <Paper elevation={3} sx={{ display:"flex",flexDirection:"column",gap:"1rem",padding:"1rem" }}>
+            <Paper elevation={3} sx={
+                { display:"flex",marginTop:"1rem",flexDirection:"column",gap:"1rem",padding:"1rem",width:"100%",alignItems:"center" }
+                }>
                 {showForm ? (
                     <>
                         <Link to={"/home"} style={{ textDecoration: "none" }}><Typography color="primary" variant="h5">Registro de Incidencias</Typography></Link>

@@ -15,7 +15,6 @@ import {
 
 import MiMenu from './MiMenu';
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import getColorByEstado from "../colores"
 
@@ -68,7 +67,6 @@ const Incidente = ({ data, currentUser, responsables }) => {
 
 
     const updateFieldInc = (key, newState) => {
-        console.log(`Actualizando incidencia con id ${data.id} a ${newState}`);
         const apiUrl = `https://ssttapi.mibbraun.pe/incidencias/${data.id}`;
 
         const dataUdated = { [key]: newState };
@@ -114,14 +112,15 @@ const Incidente = ({ data, currentUser, responsables }) => {
                     borderBottom: `.5rem solid${getColorByEstado(estado)}`
                 }}
             >
+                <Typography onClick={(e) => setShowDetalle(!showDetalle)} variant='h6' gutterBottom sx={{cursor: 'pointer' }}>{data.institucion}</Typography>
+                
                 {
-                    grado === "URGENTE" ? (
-                        <WarningRoundedIcon color='warning' />
-                    ):(
-                        <CheckCircleRoundedIcon color='success'/>
+                    estado!=="ATENDIDO" &&(
+                        grado === "URGENTE" && (
+                            <WarningRoundedIcon color='warning' />
+                        )
                     )
                 }
-                <Typography onClick={(e) => setShowDetalle(!showDetalle)} variant='h6' gutterBottom sx={{cursor: 'pointer' }}>{data.institucion}</Typography>
                 <MiMenu
                     currentUser={currentUser}
                     estado={estado}
@@ -154,7 +153,6 @@ const Incidente = ({ data, currentUser, responsables }) => {
                         value={responsable}
                         onChange={(_, newValue) => {
                             setResponsable(newValue);
-                            console.log(newValue);
                         }}
                         isOptionEqualToValue={(option, value) => option.id === value.id}
                         renderInput={(params) => (

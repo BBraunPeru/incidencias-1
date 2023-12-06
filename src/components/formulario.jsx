@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Autocomplete, Box, Button, CircularProgress, Modal, TextField, Typography } from "@mui/material"
+import Variants from "./skeletonForm"
 
 const Formulario = ({ setShowForm, setExito }) => {
 
@@ -59,7 +60,6 @@ const Formulario = ({ setShowForm, setExito }) => {
             "email": email
         }
 
-        console.log(dataToSend)
 
         fetch("https://ssttapi.mibbraun.pe/incidencias", {
             method: "POST",
@@ -94,7 +94,7 @@ const Formulario = ({ setShowForm, setExito }) => {
 
 
     return (
-        <Box sx={{display:"flex",flexDirection:"column",justifyContent:"center"}}>
+        <Box sx={{display:"flex",flexDirection:"column",justifyContent:"center",width:"100%"}}>
             {
                 (dataLoaded) ? (
                     <form onSubmit={handleAddData} style={{display:"flex", flexDirection:"column","gap":"1rem"}}>
@@ -169,7 +169,7 @@ const Formulario = ({ setShowForm, setExito }) => {
                             </Modal>
                         )}
                     </form>
-                ) : <p>Cargando Datos ....</p>
+                ) : <Variants />
             }
         </Box>
     )

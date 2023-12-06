@@ -11,7 +11,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import getColorByEstado from "../../colores";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import TransferWithinAStationIcon from '@mui/icons-material/TransferWithinAStation';
-import AddTaskIcon from '@mui/icons-material/AddTask';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import { useNavigate } from "react-router-dom";
 
 const NavBar = ({ currentUser, searchTerm, setSearchTerm, stateFilter, setStateFilter }) => {
@@ -134,6 +134,7 @@ const NavBar = ({ currentUser, searchTerm, setSearchTerm, stateFilter, setStateF
                                 <Button
                                     onClick={() => setStateFilter(item.estado)}
                                     key={index}
+                                    color="inherit"
                                     sx={
                                         stateFilter === item.estado
                                             ? {
@@ -150,9 +151,9 @@ const NavBar = ({ currentUser, searchTerm, setSearchTerm, stateFilter, setStateF
                     </Box>
                     {
                         currentUser.roll !== "tecnico" && (
-                            <Button title="ADD" onClick={() => navigate("/add")}>
-                                <AddTaskIcon />
-                            </Button>
+                            <IconButton size="large" title="ADD" onClick={() => navigate("/add")}>
+                                <AddBoxIcon />
+                            </IconButton>
                         )
                     }
 
